@@ -4,10 +4,231 @@
 	<meta charset='UTF-8'>
 	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
 	<title>EchoSphere</title>
-	<script src='[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)'></script>
+	<link href="assets/css/tailwind.css" rel="stylesheet">
 	<link rel='stylesheet' href='assets/css/style.css'>
 </head>
 <body class='bg-gray-100'>
-	<!-- Content for home.html -->
+	<nav class="bg-white shadow">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="flex items-center justify-between h-16">
+				<div class="flex items-center">
+					<a class="text-2xl font-bold text-gray-800" href="home.html">EchoSphere</a>
+				</div>
+				<div class="flex items-center">
+					<div class="ml-4">
+						<a href="profile.html" class="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Profile</a>
+						<button id="logoutButton" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Logout</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<main class="max-w-4xl mx-auto mt-8">
+		<div class="bg-white shadow overflow-hidden sm:rounded-md">
+			<div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+				<h3 class="text-lg leading-6 font-medium text-gray-900">
+					Create a Post
+				</h3>
+			</div>
+			<div class="px-4 py-5 sm:p-6">
+				<form id="createPostForm">
+					<div class="grid grid-cols-6 gap-6">
+						<div class="col-span-6 sm:col-span-4">
+							<label for="postContent" class="block text-sm font-medium text-gray-700">Content</label>
+							<textarea id="postContent" name="postContent" rows="3" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"></textarea>
+						</div>
+						<div class="col-span-6 sm:col-span-2">
+							<label for="postImage" class="block text-sm font-medium text-gray-700">Image URL (Optional)</label>
+							<input type="text" name="postImage" id="postImage" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md">
+						</div>
+					</div>
+					<div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+						<button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+							Post
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div id="postsContainer" class="mt-8">
+			<!-- Posts will be loaded here -->
+		</div>
+	</main>
+
+	<script src='assets/js/main.js'></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			const createPostForm = document.getElementById('createPostForm');
+			const postsContainer = document.getElementById('postsContainer');
+			const logoutButton = document.getElementById('logoutButton');
+
+
+			// Function to fetch and display posts
+			const loadPosts = async () => {
+				try {
+					const response = await fetch('api/get_posts.php');
+					const data = await response.json();
+
+					if (data.status === 'success') {
+						postsContainer.innerHTML = ''; // Clear existing posts
+						data.posts.forEach(post => {
+							const postElement = document.createElement('div');
+							postElement.className = 'bg-white shadow overflow-hidden sm:rounded-md mb-4';
+							postElement.innerHTML = `
+								<div class="px-4 py-5 sm:px-6">
+									<h3 class="text-lg leading-6 font-medium text-gray-900">
+										${post.username}
+									</h3>
+									<p class="mt-1 max-w-2xl text-sm text-gray-500">
+										${post.created_at}
+									</p>
+								</div>
+								<div class="border-t border-gray-200">
+									<dl>
+										<div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+											<dt class="text-sm font-medium text-gray-500">
+												Content
+											</dt>
+											<dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+												${post.content}
+											</dd>
+										</div>
+										${post.image_url ? `
+										<div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+											<dt class="text-sm font-medium text-gray-500">
+												Image
+											</dt>
+											<dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+												<img src="${post.image_url}" alt="Post Image" class="max-w-full h-auto">
+											</dd>
+										</div>
+										` : ''}
+
+										<div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+											<dt class="text-sm font-medium text-gray-500">
+												Actions
+											</dt>
+											<dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+												<button class="likeButton bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" data-post-id="${post.id}">Like</button>
+												<button class="unlikeButton bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" data-post-id="${post.id}">Unlike</button>
+												<button class="commentButton bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" data-post-id="${post.id}">Comment</button>
+											</dd>
+										</div>
+									</dl>
+								</div>
+							`;
+							postsContainer.appendChild(postElement);
+						});
+
+						// Attach event listeners to dynamically created like buttons
+						document.querySelectorAll('.likeButton').forEach(button => {
+							button.addEventListener('click', async (event) => {
+								const postId = event.target.dataset.postId;
+								const response = await fetch('api/like_post.php', {
+									method: 'POST',
+									headers: {
+										'Content-Type': 'application/x-www-form-urlencoded',
+									},
+									body: `post_id=${postId}`
+								});
+								const data = await response.json();
+								if (data.status === 'success') {
+									loadPosts(); // Reload posts to reflect like changes
+								} else {
+									alert(data.message);
+								}
+							});
+						});
+
+						document.querySelectorAll('.unlikeButton').forEach(button => {
+							button.addEventListener('click', async (event) => {
+								const postId = event.target.dataset.postId;
+								const response = await fetch('api/unlike_post.php', {
+									method: 'POST',
+									headers: {
+										'Content-Type': 'application/x-www-form-urlencoded',
+									},
+									body: `post_id=${postId}`
+								});
+								const data = await response.json();
+								if (data.status === 'success') {
+									loadPosts(); // Reload posts to reflect like changes
+								} else {
+									alert(data.message);
+								}
+							});
+						});
+
+						document.querySelectorAll('.commentButton').forEach(button => {
+							button.addEventListener('click', async (event) => {
+								const postId = event.target.dataset.postId;
+								// Implement comment functionality (e.g., show a modal)
+								alert(`Comment on post ${postId}`);
+							});
+						});
+
+
+					} else {
+						alert(data.message);
+					}
+				} catch (error) {
+					console.error('Error loading posts:', error);
+					alert('Failed to load posts.');
+				}
+			};
+
+			// Load posts on page load
+			loadPosts();
+
+			// Handle post creation
+			createPostForm.addEventListener('submit', async (event) => {
+				event.preventDefault();
+
+				const postContent = document.getElementById('postContent').value;
+				const postImage = document.getElementById('postImage').value;
+
+				try {
+					const response = await fetch('api/create_post.php', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded',
+						},
+						body: `content=${postContent}&image_url=${postImage}`
+					});
+
+					const data = await response.json();
+
+					if (data.status === 'success') {
+						document.getElementById('postContent').value = '';
+						document.getElementById('postImage').value = '';
+						loadPosts(); // Reload posts after creating a new one
+					} else {
+						alert(data.message);
+					}
+				} catch (error) {
+					console.error('Error creating post:', error);
+					alert('Failed to create post.');
+				}
+			});
+
+			logoutButton.addEventListener('click', async () => {
+				try {
+					const response = await fetch('api/logout.php');
+					const data = await response.json();
+
+					if (data.status === 'success') {
+						window.location.href = 'index.html';
+					} else {
+						alert(data.message);
+					}
+				} catch (error) {
+					console.error('Error logging out:', error);
+					alert('Failed to log out.');
+				}
+			});
+		});
+	</script>
 </body>
 </html>
