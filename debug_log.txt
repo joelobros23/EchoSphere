@@ -1,0 +1,28 @@
+--- Failure for Create Post (text and image) ---
+Data: {"content": "This is a test post at 1749750204"}
+Error: User ID is required.
+
+--- Test Planning Error ---
+Feature: View Posts Feed
+Error: Unknown feature to test: 'View Posts Feed'
+
+--- Failure for Edit Profile (basic info, profile picture) ---
+Data: {"bio": "This is an updated bio at 1749750205"}
+Error: Database verification failed. Expected 1, found 0.
+
+--- Test Planning Error ---
+Feature: Like Posts
+Error: Unknown feature to test: 'Like Posts'
+
+--- Test Planning Error ---
+Feature: Comment on Posts
+Error: Unknown feature to test: 'Comment on Posts'
+
+--- Test Planning Error ---
+Feature: View User Profiles
+Error: Unknown feature to test: 'View User Profiles'
+
+--- Test Planning Error ---
+Feature: Logout
+Error: Unknown feature to test: 'Logout'
+
