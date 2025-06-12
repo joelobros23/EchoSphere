@@ -3,11 +3,55 @@
 <head>
 	<meta charset='UTF-8'>
 	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
-	<title>EchoSphere</title>
-	<script src='[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)'></script>
-	<link rel='stylesheet' href='assets/css/style.css'>
+	<title>EchoSphere - Profile</title>
+	<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+	<link rel='stylesheet' href='assets/css/tailwind.css'>
 </head>
 <body class='bg-gray-100'>
-	<!-- Content for profile.html -->
+	<!-- Profile Header -->
+	<header class='bg-white shadow-md py-4'>
+		<div class='container mx-auto px-4'>
+			<div class='flex items-center justify-between'>
+				<a href='home.html' class='text-2xl font-semibold text-gray-800'>EchoSphere</a>
+				<nav>
+					<ul class='flex space-x-4'>
+						<li><a href='home.html' class='text-gray-600 hover:text-gray-800'>Home</a></li>
+						<li><a href='profile.html' class='text-gray-600 hover:text-gray-800'>Profile</a></li>
+						<li><a href='#' id='logout-link' class='text-gray-600 hover:text-gray-800'>Logout</a></li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</header>
+
+	<!-- Profile Content -->
+	<div class='container mx-auto mt-8 p-4 bg-white shadow-md rounded-md'>
+		<div class='flex items-center space-x-4'>
+			<img src='assets/img/default-profile.jpg' alt='Profile Picture' class='w-24 h-24 rounded-full' id='profile-picture'>
+			<div>
+				<h2 class='text-2xl font-semibold' id='username'></h2>
+				<p class='text-gray-500' id='name'></p>
+			</div>
+		</div>
+
+		<div class='mt-4'>
+			<h3 class='text-lg font-semibold'>Bio</h3>
+			<p id='bio'>Loading bio...</p>
+		</div>
+
+		<div class='mt-4'>
+			<a href='edit_profile.html' class='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>Edit Profile</a>
+		</div>
+
+		<div class='mt-8'>
+			<h3 class='text-xl font-semibold mb-4'>Posts</h3>
+			<div id='posts-container'>
+				<!-- Posts will be loaded here -->
+			</div>
+		</div>
+	</div>
+
+	<script src='assets/js/profile.js'></script>
+	<script src='assets/js/auth.js'></script>
 </body>
 </html>
